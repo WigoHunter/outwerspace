@@ -1,4 +1,16 @@
-/* CSS declarations go here */
+/* My setting */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Oxygen');
+
 body {
-    margin: 0;
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  font-family: 'Oxygen', 'Open Sans', sans-serif;
 }

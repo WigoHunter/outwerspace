@@ -16,5 +16,9 @@
   "main": "index.js",
   "repository": "https://github.com/WigoHunter/usmap.git",
   "author": "<mattandkevin1060@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-plugin-react": "^7.8.2"
+  }
 }
