@@ -1,11 +1,37 @@
-@primary: white;
-@yellow: yellow;
+@primary: #3498DB;
+@lightBlue: #3FD1CB;
+@yellow: #F1C40F;
+@paddingRight: 60px - 60vw;
 
 .forum {
-    position: absolute;
-    height: 300px;
-    width: 200px;
-    background: blue;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 60vw;
+    background: @lightBlue;
     z-index: 100;
-	opacity: 0.7;
+    opacity: 0.9;
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.6);
+    transition: all 0.6s ease;
+
+    & .close {
+        position: absolute;
+        top: 20px;
+        left: 10px;
+        transform: rotate(45deg);
+        transition: transform 0.6s ease;
+        font-weight: bold;
+        color: #666;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    &.hide {
+        right: calc(~"40px - 60vw");
+
+        & .close {
+            transform: rotate(0);
+        }
+    }
 }

@@ -27,7 +27,11 @@ const Map = compose(
 	<GoogleMap
 		defaultZoom={2}
 		defaultCenter={{ lat: 0, lng: 0 }}
-		defaultOptions={{ styles: mapStyle }}
+		defaultOptions={{
+			styles: mapStyle,
+			fullscreenControl: false,
+			fullscreenControlOptions: false,
+		}}
 	>
 		{props.isMarkerShown &&
             <Marker position={{ lat: -34.397, lng: 150.644}} onClick={props.onClick} />

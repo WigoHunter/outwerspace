@@ -2,7 +2,8 @@
   "name": "usmap",
   "private": true,
   "scripts": {
-    "start": "meteor run"
+    "start": "meteor run",
+    "prepush": "./node_modules/.bin/eslint --ext .jsx,.js ./"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.36",
@@ -19,6 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "eslint": "^4.19.1",
-    "eslint-plugin-react": "^7.8.2"
+    "eslint-plugin-react": "^7.8.2",
+    "husky": "^0.14.3"
   }
 }
