@@ -8,6 +8,7 @@ body {
   min-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
+  background-color: #E5E3E0;
 }
 
 h1, h2, h3, p {

@@ -31,6 +31,8 @@ const Map = compose(
 			styles: mapStyle,
 			fullscreenControl: false,
 			fullscreenControlOptions: false,
+			mapTypeControl: false,
+			mapTypeControlOptions: false,
 		}}
 	>
 		{props.isMarkerShown &&
