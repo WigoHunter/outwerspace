@@ -1,5 +1,7 @@
 import React from "react";
 import FacebookLogin from "react-facebook-login";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 
 export default class Forum extends React.Component {
@@ -12,23 +14,34 @@ export default class Forum extends React.Component {
 		};
 		
 		this.toggleForum = this.toggleForum.bind(this);
+		this.responseFacebook = this.responseFacebook.bind(this);
 	}
 
 	toggleForum() {
-		this.setState({
-			hide: !this.state.hide
-		});
+		if (this.state.login) {
+			this.setState({
+				hide: !this.state.hide
+			});
+		} else if (!toast.isActive(this.toastId)) {
+			this.toastId = toast.warn("Please Login First :)", {
+				position: "top-left",
+				draggable: false,
+			});
+		}
 	}
 
 	responseFacebook(res) {
 		// reset: https://graph.facebook.com/me/permissions?method=delete&access_token=
 		// geocoding response: https://maps.googleapis.com/maps/api/geocode/json?address=New%20York,%20New%20York
-		console.log(res); // eslint-disable-line
+		console.log(res, res.accessToken); // eslint-disable-line
+
+		this.setState({ login: true });
 	}
 
 	render() {
 		return (
 			<div className={`forum ${this.state.hide && "hide"}`}>
+				<ToastContainer />
 				<p className="close" onClick={() => this.toggleForum()}>＋</p>
 				{
 					this.state.login
