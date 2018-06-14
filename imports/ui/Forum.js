@@ -1,16 +1,19 @@
 import React from "react";
+import PropTypes from "prop-types";
+import { Meteor } from "meteor/meteor";
 import FacebookLogin from "react-facebook-login";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 
-export default class Forum extends React.Component {
+import { UserContext } from "./App";
+
+class Forum extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			hide: false,
-			login: false,
+			hide: false
 		};
 		
 		this.toggleForum = this.toggleForum.bind(this);
@@ -18,10 +21,11 @@ export default class Forum extends React.Component {
 	}
 
 	toggleForum() {
-		if (this.state.login) {
+		if (this.props.loggedin) {
 			this.setState({
 				hide: !this.state.hide
 			});
+			console.log(this.props.user);
 		} else if (!toast.isActive(this.toastId)) {
 			this.toastId = toast.warn("Please Login First :)", {
 				position: "top-left",
@@ -32,10 +36,23 @@ export default class Forum extends React.Component {
 
 	responseFacebook(res) {
 		// reset: https://graph.facebook.com/me/permissions?method=delete&access_token=
-		// geocoding response: https://maps.googleapis.com/maps/api/geocode/json?address=New%20York,%20New%20York
 		console.log(res, res.accessToken); // eslint-disable-line
 
-		this.setState({ login: true });
+		this.props.login();
+		
+		if (!this.props.users.some(user => user.userId === res.id)) {
+			let usrObj = {
+				userId: res.id,
+				fb_link: res.link,
+				pic: res.picture.data.url,
+				location: null
+			};
+
+			Meteor.call("users.insert", usrObj);
+			this.props.user.setUser(usrObj);
+		} else {
+			this.props.user.setUser(this.props.users.find(user => user.userId === res.id));
+		}
 	}
 
 	render() {
@@ -44,9 +61,13 @@ export default class Forum extends React.Component {
 				<ToastContainer />
 				<p className="close" onClick={() => this.toggleForum()}>＋</p>
 				{
-					this.state.login
+					this.props.loggedin
 						?
-						<div></div>
+						this.props.user.location == null
+							?
+							<div>最後一個步驟！</div>
+							:
+							<div></div>
 						:
 						<div className="welcome">
 							<h2>歡迎來到 <span>OutwerSpace</span></h2>
@@ -65,3 +86,18 @@ export default class Forum extends React.Component {
 		);
 	}
 }
+
+Forum.propTypes = {
+	users: PropTypes.array,
+	user: PropTypes.object,
+	login: PropTypes.func,
+	loggedin: PropTypes.bool,
+};
+
+const forumWithContext = props => (
+	<UserContext.Consumer>
+		{user => <Forum {...props} user={user} />}
+	</UserContext.Consumer>
+);
+
+export default forumWithContext;
