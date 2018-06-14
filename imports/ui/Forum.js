@@ -25,7 +25,6 @@ class Forum extends React.Component {
 			this.setState({
 				hide: !this.state.hide
 			});
-			console.log(this.props.user);
 		} else if (!toast.isActive(this.toastId)) {
 			this.toastId = toast.warn("Please Login First :)", {
 				position: "top-left",
