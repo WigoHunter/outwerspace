@@ -19,6 +19,7 @@ class App extends React.Component {
 
 		this.state = {
 			loginned: false,
+			tempLocation: null,
 			userContext: {
 				user: null,
 				setUser: (user) => {
@@ -34,6 +35,7 @@ class App extends React.Component {
 
 		this.login = this.login.bind(this);
 		this.logout = this.logout.bind(this);
+		this.setTempLocation = this.setTempLocation.bind(this);
 	}
 
 	login() {
@@ -44,6 +46,15 @@ class App extends React.Component {
 		this.setState({ login: false });
 	}
 
+	setTempLocation(e) {
+		this.setState({
+			tempLocation: e == null ? null : {
+				lat: e.latLng.lat(),
+				lng: e.latLng.lng(),
+			}
+		});
+	} 
+
 	render() {
 		return (
 			<UserContext.Provider value={this.state.userContext}>
@@ -52,7 +63,11 @@ class App extends React.Component {
 					login={this.login}
 					users={this.props.users}
 				/>
-				<MapComponent />
+				<MapComponent
+					isMarkerShown
+					setTempLocation={this.setTempLocation}
+					tempLocation={this.state.tempLocation}
+				/>
 			</UserContext.Provider>
 		);
 	}

@@ -16,42 +16,49 @@ class Forum extends React.Component {
 			hide: false
 		};
 		
+		this.toggleForum = () => {
+			if (this.props.loggedin) {
+				this.setState({
+					hide: !this.state.hide
+				});
+			} else if (!toast.isActive(this.toastId)) {
+				this.toastId = toast.warn("Please Login First :)", {
+					position: "top-left",
+					draggable: false,
+				});
+			}
+		};
+
 		this.toggleForum = this.toggleForum.bind(this);
 		this.responseFacebook = this.responseFacebook.bind(this);
-	}
-
-	toggleForum() {
-		if (this.props.loggedin) {
-			this.setState({
-				hide: !this.state.hide
-			});
-		} else if (!toast.isActive(this.toastId)) {
-			this.toastId = toast.warn("Please Login First :)", {
-				position: "top-left",
-				draggable: false,
-			});
-		}
+		this.initLocation = this.initLocation.bind(this);
 	}
 
 	responseFacebook(res) {
-		// reset: https://graph.facebook.com/me/permissions?method=delete&access_token=
+		// reset: https://graph.facebook.com/me/permissions?method=delete&access_token=EAAGfyczjlbsBADl2EC2JAUPhhC1sZAlnF5crdoPxAk83K6BTLxWYIE1HXmCEGNF9kBCgXRZAjqvKqLvoSFAodgFeC6ZBxAkoT3ZBvzx0Tf7PzS7ZCqhaZBsfRekeqa3Osswmpp6Jf3J9wb90GfafZAe43hPKLEmb6ZBz3J3DpKw14AW16WXOmhbgaDsbqvuXO1O8YqKxbQEOEwZDZD
 		console.log(res, res.accessToken); // eslint-disable-line
 
-		this.props.login();
+		if (res.accessToken) {
+			this.props.login();
 		
-		if (!this.props.users.some(user => user.userId === res.id)) {
-			let usrObj = {
-				userId: res.id,
-				fb_link: res.link,
-				pic: res.picture.data.url,
-				location: null
-			};
-
-			Meteor.call("users.insert", usrObj);
-			this.props.user.setUser(usrObj);
-		} else {
-			this.props.user.setUser(this.props.users.find(user => user.userId === res.id));
+			if (!this.props.users.some(user => user.userId === res.id)) {
+				let usrObj = {
+					userId: res.id,
+					fb_link: res.link,
+					pic: res.picture.data.url,
+					location: null
+				};
+	
+				Meteor.call("users.insert", usrObj);
+				this.props.user.setUser(usrObj);
+			} else {
+				this.props.user.setUser(this.props.users.find(user => user.userId === res.id));
+			}
 		}
+	}
+
+	initLocation() {
+		this.setState({ hide: true });
 	}
 
 	render() {
@@ -64,7 +71,11 @@ class Forum extends React.Component {
 						?
 						this.props.user.location == null
 							?
-							<div>最後一個步驟！</div>
+							<div className="ask-for-location">
+								<h2>最後一個步驟！</h2>
+								<p>也告訴大家你在哪吧</p>
+								<button onClick={() => this.initLocation()}>Start</button>
+							</div>
 							:
 							<div></div>
 						:
