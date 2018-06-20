@@ -19,6 +19,11 @@ class MapComponent extends React.Component {
 		this.setMapState = this.setMapState.bind(this);
 	}
 
+	componentDidUpdate(prevProps) {
+		if (this.props.userLocation != prevProps.userLocation)
+			console.log("get location succesfully", this.props.userLocation); //eslint-disable-line
+	} 
+
 	setMapState(state) {
 		this.setState(state);
 	}
@@ -36,6 +41,7 @@ MapComponent.propTypes = {
 	isMarkerShown: PropTypes.bool,
 	setTempLocation: PropTypes.func,
 	tempLocation: PropTypes.object,
+	userLocation: PropTypes.object,
 };
 
 const Map = compose(
@@ -55,19 +61,24 @@ const Map = compose(
 				refs.map = ref;
 			},
 			onClicked: () => (e) => {
-				refs.map.props.setTempLocation(e);
+				refs.map.props.setTempLocation({
+					lat: e.latLng.lat(),
+					lng: e.latLng.lng(),
+				});
 
-				if (refs.map.props.mapState.firstTrial) {
+				refs.map.panTo({
+					lat: e.latLng.lat(),
+					lng: e.latLng.lng()
+				});
+
+				if (refs.map.props.mapState.zoom < 9) {
 					refs.map.props.setMapState({
 						...refs.map.props.mapState,
-						firstTrial: false,
-						center: {
-							lat: e.latLng.lat(),
-							lng: e.latLng.lng()
-						},
-						zoom: 9,
+						zoom: 9
 					});
 				}
+
+				// START HERE: toast.success("確定滴家？") two button: succes then update Mongo, else nothing (keep clicking the map).
 			}
 		};
 	}),
@@ -80,8 +91,8 @@ const Map = compose(
 		setTempLocation={props.setTempLocation}
 		setMapState={props.setMapState}
 		mapState={props.mapState}
-		zoom={props.mapState.zoom}
-		center={props.mapState.center}
+		zoom={props.userLocation == null ? props.mapState.zoom : 15}
+		center={props.userLocation == null ? props.mapState.center : props.userLocation}
 		defaultOptions={{
 			styles: mapStyle,
 			fullscreenControl: false,
@@ -99,4 +110,6 @@ const Map = compose(
 	</GoogleMap>
 );
 
+// All users marker: title: id, icon: Facebook profile pic,
+// onClick: Route push /profile/user_id
 export default MapComponent;

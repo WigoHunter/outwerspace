@@ -13,7 +13,7 @@ class Forum extends React.Component {
 		super(props);
 
 		this.state = {
-			hide: false
+			hide: false,
 		};
 		
 		this.toggleForum = () => {
@@ -46,19 +46,49 @@ class Forum extends React.Component {
 					userId: res.id,
 					fb_link: res.link,
 					pic: res.picture.data.url,
-					location: null
+					location: null,
 				};
 	
 				Meteor.call("users.insert", usrObj);
-				this.props.user.setUser(usrObj);
+				this.props.user.setUser({...usrObj, curLocation: null});
 			} else {
-				this.props.user.setUser(this.props.users.find(user => user.userId === res.id));
+				this.props.user.setUser({
+					...this.props.users.find(user => user.userId === res.id),
+					curLocation: null,
+				});
 			}
 		}
 	}
 
 	initLocation() {
 		this.setState({ hide: true });
+
+		if (!toast.isActive(this.toastId)) {
+			// Library specific usage
+			this.toastId = toast.success(({}) => // eslint-disable-line
+				<div className="toast-for-location">
+					希望透過瀏覽器定位輔助？
+					<p>定位後也會再給您微調</p>
+					<div>
+						<button onClick={() => this.props.getUserCurrentLocation()}>願意</button>
+						<button onClick={() => this.startAdjustingLocation()}>手動操作</button>
+					</div>
+				</div>,
+			{
+				autoClose: false,
+				position: "top-left",
+				closeButton: <span></span>
+			}
+			);
+		}
+	}
+
+	startAdjustingLocation() {
+		toast.success("請開始手動點選地圖、微調您的地點 :)", {
+			position: "top-left",
+			autoClose: 5000,
+			pauseOnHover: true
+		});
 	}
 
 	render() {
@@ -102,6 +132,7 @@ Forum.propTypes = {
 	user: PropTypes.object,
 	login: PropTypes.func,
 	loggedin: PropTypes.bool,
+	getUserCurrentLocation: PropTypes.func,
 };
 
 const forumWithContext = props => (
