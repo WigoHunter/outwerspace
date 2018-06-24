@@ -13,7 +13,6 @@ import "../less/App.less";
 import { Users } from "../api/users";
 
 export const UserContext = React.createContext();
-export const UserLocationContext = React.createContext();
 
 class App extends React.Component {
 	constructor(props) {
@@ -24,6 +23,7 @@ class App extends React.Component {
 			tempLocation: null,
 			userLocation: null,
 			userContext: {
+				// user != null => user logged in
 				user: null,
 				setUser: (user) => {
 					this.setState({

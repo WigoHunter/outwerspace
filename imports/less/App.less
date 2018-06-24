@@ -1,7 +1,7 @@
 @primary: #3498DB;
 @lightBlue: #3FD1CB;
 @yellow: #f9e75e;
-@paddingRight: 60px - 60vw;
+@paddingRight: 80px - 60vw;
 
 .forum {
     position: fixed;
@@ -33,23 +33,10 @@
         margin: 5px 0;
     }
 
-    & .close {
-        position: absolute;
-        top: 20px;
-        left: 10px;
-        transform: rotate(45deg);
-        transition: transform 0.6s ease;
-        font-weight: bold;
-        color: #666;
-        font-size: 24px;
-        cursor: pointer;
-        z-index: 100;
-    }
-
     &.hide {
-        right: calc(~"40px - 60vw");
+        right: calc(~"50px - 60vw");
 
-        & .close {
+        & .tools .top .close {
             transform: rotate(0);
         }
     }
@@ -70,6 +57,39 @@
                 transform: scale(1.1);
                 background-color: @yellow;
                 border-color: @yellow;
+            }
+        }
+    }
+
+    & .tools {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        padding: 20px 0;
+        width: 50px;
+        height: 100vh;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+
+        & .top {
+            & .close {
+                transform: rotate(45deg);
+                transition: transform 0.6s ease;
+                font-weight: bold;
+                color: #666;
+                font-size: 24px;
+                cursor: pointer;
+                z-index: 100;
+            }
+        }
+
+        & .bot {
+            & .user-pic {
+                width: 30px;
+                height: 30px;
             }
         }
     }

@@ -5,6 +5,8 @@ import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-map
 import mapStyle from "../../map.json";
 import { keys } from "../../keys.json";
 
+import { UserContext } from "./App";
+
 // Wrapper for state changes
 class MapComponent extends React.Component {
 	constructor(props) {
@@ -42,6 +44,7 @@ MapComponent.propTypes = {
 	setTempLocation: PropTypes.func,
 	tempLocation: PropTypes.object,
 	userLocation: PropTypes.object,
+	user: PropTypes.object,
 };
 
 const Map = compose(
@@ -105,6 +108,8 @@ const Map = compose(
 			<Marker
 				position={{ lat: props.tempLocation.lat, lng: props.tempLocation.lng}}
 				onClick={props.onClick}
+				defaultIcon={{ url: `https://res.cloudinary.com/outwerspace/image/facebook/w_50,h_50,r_max/${props.user.user.userId}.png` }}
+				content={<div className="map-pic">hi</div>}
 			/>
 		}
 	</GoogleMap>
@@ -112,4 +117,10 @@ const Map = compose(
 
 // All users marker: title: id, icon: Facebook profile pic,
 // onClick: Route push /profile/user_id
-export default MapComponent;
+const mapWithContext = props => (
+	<UserContext.Consumer>
+		{user => <MapComponent {...props} user={user} />}
+	</UserContext.Consumer>
+);
+
+export default mapWithContext;

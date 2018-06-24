@@ -92,10 +92,20 @@ class Forum extends React.Component {
 	}
 
 	render() {
+		console.log(this.props.user);
 		return (
 			<div className={`forum ${this.state.hide && "hide"}`}>
 				<ToastContainer />
-				<p className="close" onClick={() => this.toggleForum()}>＋</p>
+				<div className="tools">
+					<div className="top">
+						<p className="close" onClick={() => this.toggleForum()}>＋</p>
+					</div>
+					<div className="bot">
+						{this.props.user.user &&
+							<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_30,h_30,r_max/${this.props.user.user.userId}.png)` }}></div>
+						}
+					</div>
+				</div>
 				{
 					this.props.loggedin
 						?
