@@ -129,7 +129,7 @@ const Map = compose(
 						/>
 					);
 				}
-			})}
+			})
 		}
 	</GoogleMap>
 );

@@ -13,6 +13,6 @@ const routes =
 			<Route exact path="/" component={App} />
 			{/* with profile id */}
 		</Switch>
-	</Router>
+	</Router>;
 
 export default routes;
