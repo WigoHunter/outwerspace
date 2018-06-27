@@ -12,5 +12,15 @@ if (Meteor.isServer) {
 Meteor.methods({
 	"users.insert"(user) {
 		Users.insert(user);
+	},
+
+	"user.setLocation"(data) {
+		Users.update({
+			userId: data.id
+		}, {
+			$set: {
+				location: data.location
+			}
+		});
 	}
 });

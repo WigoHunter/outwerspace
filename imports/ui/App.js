@@ -5,6 +5,7 @@ import { withTracker } from "meteor/react-meteor-data";
 import { toast } from "react-toastify";
 import MapComponent from "./MapComponent";
 import Forum from "./Forum";
+import "react-toastify/dist/ReactToastify.css";
 
 // Styles
 import "../less/App.less";
@@ -20,8 +21,10 @@ class App extends React.Component {
 
 		this.state = {
 			loginned: false,
-			tempLocation: null,
-			userLocation: null,
+			userInputtingLocation: false,
+			tempLocation: null,				// location of the pin for user input
+			userLocation: null,				// the absolute location got from browser
+			confirmingLocation: false,
 			userContext: {
 				// user != null => user logged in
 				user: null,
@@ -40,6 +43,10 @@ class App extends React.Component {
 		this.logout = this.logout.bind(this);
 		this.setTempLocation = this.setTempLocation.bind(this);
 		this.getUserCurrentLocation = this.getUserCurrentLocation.bind(this);
+		this.confirmLocation = this.confirmLocation.bind(this);
+		this.setUserLocation = this.setUserLocation.bind(this);
+		this.userStartInputtingLocation = this.userStartInputtingLocation.bind(this);
+		this.userEndInputtingLocation = this.userEndInputtingLocation.bind(this);
 	}
 
 	login() {
@@ -50,6 +57,55 @@ class App extends React.Component {
 		this.setState({ login: false });
 	}
 
+	userStartInputtingLocation() {
+		this.setState({ userInputtingLocation: true });
+	}
+
+	userEndInputtingLocation() {
+		this.setState({ userInputtingLocation: false });
+	}
+
+	setUserLocation() {
+		this.userEndInputtingLocation();
+		this.setState({
+			userContext: {
+				...this.state.userContext,
+				user: {
+					...this.state.userContext.user,
+					location: this.state.tempLocation
+				}
+			}
+		});
+
+		Meteor.call("user.setLocation", {
+			id: this.state.userContext.user.userId,
+			location: this.state.tempLocation
+		});
+	}
+
+	confirmLocation() {
+		if (!this.state.confirmingLocation) {
+			// Library specific usage
+			this.confirmLocationToast = toast.success(({}) => // eslint-disable-line
+				<div className="toast-for-location">
+					希望將自己定位在這嗎？
+					<p>未來也還能更動</p>
+					<div>
+						<button onClick={() => { this.setUserLocation(); }}>是</button>
+						<button onClick={() => { this.setState({ confirmingLocation: false }); }}>不是</button>
+					</div>
+				</div>,
+			{
+				autoClose: false,
+				position: "top-left",
+				closeButton: <span></span>
+			}
+			);
+		}
+
+		this.setState({ confirmingLocation: true });
+	}
+
 	getUserCurrentLocation() {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition((res) => {
@@ -58,6 +114,9 @@ class App extends React.Component {
 					lat: res.coords.latitude,
 					lng: res.coords.longitude,
 				}});
+
+				this.confirmLocation();
+				this.userStartInputtingLocation();
 			});
 		} else {
 			toast.error("Oops, 看來您的瀏覽器不支援定位", {
@@ -85,10 +144,14 @@ class App extends React.Component {
 					loggedin={this.state.login}
 					login={this.login}
 					users={this.props.users}
+					userInputtingLocation={this.state.userInputtingLocation}
+					userStartInputtingLocation={this.userStartInputtingLocation}
 					getUserCurrentLocation={this.getUserCurrentLocation}
 				/>
 				<MapComponent
-					isMarkerShown
+					users={this.props.users}
+					userInputtingLocation={this.state.userInputtingLocation}
+					confirmLocation={this.confirmLocation}
 					userLocation={this.state.userLocation}
 					setTempLocation={this.setTempLocation}
 					tempLocation={this.state.tempLocation}

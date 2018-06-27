@@ -15,23 +15,29 @@ class Forum extends React.Component {
 		this.state = {
 			hide: false,
 		};
-		
-		this.toggleForum = () => {
-			if (this.props.loggedin) {
-				this.setState({
-					hide: !this.state.hide
-				});
-			} else if (!toast.isActive(this.toastId)) {
-				this.toastId = toast.warn("Please Login First :)", {
-					position: "top-left",
-					draggable: false,
-				});
-			}
-		};
 
 		this.toggleForum = this.toggleForum.bind(this);
 		this.responseFacebook = this.responseFacebook.bind(this);
 		this.initLocation = this.initLocation.bind(this);
+	}
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.userInputtingLocation == true) {
+			this.setState({ hide: false });
+		}
+	}
+
+	toggleForum() {
+		if (this.props.loggedin) {
+			this.setState({
+				hide: !this.state.hide
+			});
+		} else if (!toast.isActive(this.toastId)) {
+			this.toastId = toast.warn("Please Login First :)", {
+				position: "top-left",
+				draggable: false,
+			});
+		}
 	}
 
 	responseFacebook(res) {
@@ -76,14 +82,15 @@ class Forum extends React.Component {
 				</div>,
 			{
 				autoClose: false,
-				position: "top-left",
-				closeButton: <span></span>
+				position: "top-left"
 			}
 			);
 		}
 	}
 
 	startAdjustingLocation() {
+		this.props.userStartInputtingLocation();
+
 		toast.success("請開始手動點選地圖、微調您的地點 :)", {
 			position: "top-left",
 			autoClose: 5000,
@@ -92,7 +99,6 @@ class Forum extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.user);
 		return (
 			<div className={`forum ${this.state.hide && "hide"}`}>
 				<ToastContainer />
@@ -109,7 +115,7 @@ class Forum extends React.Component {
 				{
 					this.props.loggedin
 						?
-						this.props.user.location == null
+						this.props.user.user && this.props.user.user.location == null
 							?
 							<div className="ask-for-location">
 								<h2>最後一個步驟！</h2>
@@ -117,7 +123,7 @@ class Forum extends React.Component {
 								<button onClick={() => this.initLocation()}>Start</button>
 							</div>
 							:
-							<div></div>
+							<div>感謝！{/* START HERE: Done. And guide users to input his/her profile */}</div>
 						:
 						<div className="welcome">
 							<h2>歡迎來到 <span>OutwerSpace</span></h2>
@@ -143,6 +149,7 @@ Forum.propTypes = {
 	login: PropTypes.func,
 	loggedin: PropTypes.bool,
 	getUserCurrentLocation: PropTypes.func,
+	userStartInputtingLocation: PropTypes.func,
 };
 
 const forumWithContext = props => (

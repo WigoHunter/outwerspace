@@ -64,24 +64,27 @@ const Map = compose(
 				refs.map = ref;
 			},
 			onClicked: () => (e) => {
-				refs.map.props.setTempLocation({
-					lat: e.latLng.lat(),
-					lng: e.latLng.lng(),
-				});
-
-				refs.map.panTo({
-					lat: e.latLng.lat(),
-					lng: e.latLng.lng()
-				});
-
-				if (refs.map.props.mapState.zoom < 9) {
-					refs.map.props.setMapState({
-						...refs.map.props.mapState,
-						zoom: 9
+				if (refs.map.props.userInputtingLocation) {
+					refs.map.props.setTempLocation({
+						lat: e.latLng.lat(),
+						lng: e.latLng.lng(),
 					});
+	
+					refs.map.panTo({
+						lat: e.latLng.lat(),
+						lng: e.latLng.lng()
+					});
+	
+					if (refs.map.props.mapState.zoom < 9) {
+						refs.map.props.setMapState({
+							...refs.map.props.mapState,
+							zoom: 9
+						});
+					}
+	
+					// START HERE: toast.success("確定滴家？")
+					refs.map.props.confirmLocation();
 				}
-
-				// START HERE: toast.success("確定滴家？") two button: succes then update Mongo, else nothing (keep clicking the map).
 			}
 		};
 	}),
@@ -94,6 +97,8 @@ const Map = compose(
 		setTempLocation={props.setTempLocation}
 		setMapState={props.setMapState}
 		mapState={props.mapState}
+		userInputtingLocation={props.userInputtingLocation}
+		confirmLocation={props.confirmLocation}
 		zoom={props.userLocation == null ? props.mapState.zoom : 15}
 		center={props.userLocation == null ? props.mapState.center : props.userLocation}
 		defaultOptions={{
@@ -104,13 +109,27 @@ const Map = compose(
 			mapTypeControlOptions: false,
 		}}
 	>
-		{props.isMarkerShown && props.tempLocation != null &&
-			<Marker
-				position={{ lat: props.tempLocation.lat, lng: props.tempLocation.lng}}
-				onClick={props.onClick}
-				defaultIcon={{ url: `https://res.cloudinary.com/outwerspace/image/facebook/w_50,h_50,r_max/${props.user.user.userId}.png` }}
-				content={<div className="map-pic">hi</div>}
-			/>
+		{props.userInputtingLocation
+			? 
+			props.tempLocation != null &&
+				<Marker
+					position={{ lat: props.tempLocation.lat, lng: props.tempLocation.lng}}
+					onClick={props.onClick}
+					defaultIcon={{ url: `https://res.cloudinary.com/outwerspace/image/facebook/w_50,h_50,r_max/${props.user.user.userId}.png` }}
+				/>
+			:
+			props.users.map((user) => {
+				if (user.location) {
+					return (
+						<Marker
+							key={user.userId}
+							position={{ lat: user.location.lat, lng: user.location.lng}}
+							onClick={() => {alert("hi");/* START HERE: if logged in then show user page. Else ask login */}}
+							defaultIcon={{ url: `https://res.cloudinary.com/outwerspace/image/facebook/w_50,h_50,r_max/${user.userId}.png` }}
+						/>
+					);
+				}
+			})}
 		}
 	</GoogleMap>
 );
