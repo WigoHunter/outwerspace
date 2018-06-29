@@ -65,16 +65,19 @@ const Map = compose(
 			},
 			onClicked: () => (e) => {
 				if (refs.map.props.userInputtingLocation) {
+					// set marker location
 					refs.map.props.setTempLocation({
 						lat: e.latLng.lat(),
 						lng: e.latLng.lng(),
 					});
 	
+					// set mapview
 					refs.map.panTo({
 						lat: e.latLng.lat(),
 						lng: e.latLng.lng()
 					});
 	
+					// if the zoom level is not enough, force to level 9.
 					if (refs.map.props.mapState.zoom < 9) {
 						refs.map.props.setMapState({
 							...refs.map.props.mapState,
