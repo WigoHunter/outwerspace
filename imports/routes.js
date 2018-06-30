@@ -5,12 +5,12 @@ import {
 	Route
 } from "react-router-dom";
 
-import App from "../imports/ui/App.js";
+import ErrorHedgedApp from "../imports/ui/ErrorHedgedApp";
 
 const routes =
 	<Router>
 		<Switch>
-			<Route exact path="/" component={App} />
+			<Route exact path="/" component={ErrorHedgedApp} />
 			{/* with profile id */}
 		</Switch>
 	</Router>;
