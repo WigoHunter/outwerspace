@@ -5,6 +5,7 @@ import { withTracker } from "meteor/react-meteor-data";
 import { toast } from "react-toastify";
 import MapComponent from "./MapComponent";
 import Forum from "./Forum";
+import Loading from "./Loading";
 import "react-toastify/dist/ReactToastify.css";
 
 // Styles
@@ -21,6 +22,7 @@ class App extends React.Component {
 
 		this.state = {
 			loginned: false,
+			waitingForLocation: false,
 			userInputtingLocation: false,
 			tempLocation: null,				// location of the pin for user input
 			userLocation: null,				// the absolute location got from browser
@@ -108,12 +110,16 @@ class App extends React.Component {
 
 	getUserCurrentLocation() {
 		if (navigator.geolocation) {
+			this.setState({ waitingForLocation: true });
 			navigator.geolocation.getCurrentPosition((res) => {
 				this.setTempLocation({ lat: res.coords.latitude, lng: res.coords.longitude });
-				this.setState({ userLocation: {
-					lat: res.coords.latitude,
-					lng: res.coords.longitude,
-				}});
+				this.setState({
+					waitingForLocation: false,
+					userLocation: {
+						lat: res.coords.latitude,
+						lng: res.coords.longitude,
+					}
+				});
 
 				this.confirmLocation();
 				this.userStartInputtingLocation();
@@ -140,6 +146,7 @@ class App extends React.Component {
 	render() {
 		return (
 			<UserContext.Provider value={this.state.userContext}>
+				{this.state.waitingForLocation && <Loading />}
 				<Forum
 					loggedin={this.state.login}
 					login={this.login}

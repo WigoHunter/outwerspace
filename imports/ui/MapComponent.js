@@ -20,7 +20,7 @@ class MapComponent extends React.Component {
 
 		this.setMapState = this.setMapState.bind(this);
 	}
-
+	
 	componentDidUpdate(prevProps) {
 		if (this.props.userLocation != prevProps.userLocation)
 			console.log("get location succesfully", this.props.userLocation); //eslint-disable-line

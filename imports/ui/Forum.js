@@ -22,7 +22,8 @@ class Forum extends React.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (prevProps.userInputtingLocation == true) {
+		// If user inputting location completes, open the forum.
+		if (prevProps.userInputtingLocation == true && this.props.userInputtingLocation == false && this.props.user.user.location != null) {
 			this.setState({ hide: false });
 		}
 	}
@@ -51,7 +52,6 @@ class Forum extends React.Component {
 				let usrObj = {
 					userId: res.id,
 					fb_link: res.link,
-					pic: res.picture.data.url,
 					location: null,
 				};
 	
@@ -150,6 +150,7 @@ Forum.propTypes = {
 	loggedin: PropTypes.bool,
 	getUserCurrentLocation: PropTypes.func,
 	userStartInputtingLocation: PropTypes.func,
+	userInputtingLocation: PropTypes.bool,
 };
 
 const forumWithContext = props => (
