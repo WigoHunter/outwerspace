@@ -179,6 +179,7 @@ class App extends React.Component {
 				<ToastContainer />
 				<Forum
 					loggedin={this.state.login}
+					user={this.state.userContext}
 					users={this.props.users}
 					userInputtingLocation={this.state.userInputtingLocation}
 					userStartInputtingLocation={this.userStartInputtingLocation}
