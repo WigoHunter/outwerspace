@@ -1,7 +1,6 @@
 import React from "react";
-import App from "./App";
 
-class ErrorHedgedApp extends React.Component {
+class ErrorCatcher extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -20,9 +19,9 @@ class ErrorHedgedApp extends React.Component {
 		if (this.state.error) {
 			return <h1>Something went wrong. Kevin is working on it.</h1>;
 		} else {
-			return <App />;
+			return this.props.children;			// eslint-disable-line
 		}
 	}
 }
 
-export default ErrorHedgedApp;
+export default ErrorCatcher;

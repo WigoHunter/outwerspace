@@ -2,10 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import MapComponent from "./MapComponent";
 import Forum from "./Forum";
-import Loading from "./Loading";
+import Loading from "./helpers/Loading";
 import "react-toastify/dist/ReactToastify.css";
 
 // Styles
@@ -49,6 +49,7 @@ class App extends React.Component {
 		this.setUserLocation = this.setUserLocation.bind(this);
 		this.userStartInputtingLocation = this.userStartInputtingLocation.bind(this);
 		this.userEndInputtingLocation = this.userEndInputtingLocation.bind(this);
+		this.responseFacebook = this.responseFacebook.bind(this);
 	}
 
 	login() {
@@ -65,6 +66,34 @@ class App extends React.Component {
 
 	userEndInputtingLocation() {
 		this.setState({ userInputtingLocation: false });
+	}
+
+	// Process Facebook Response
+	responseFacebook(res) {
+		// reset: https://graph.facebook.com/me/permissions?method=delete&access_token=EAAGfyczjlbsBADl2EC2JAUPhhC1sZAlnF5crdoPxAk83K6BTLxWYIE1HXmCEGNF9kBCgXRZAjqvKqLvoSFAodgFeC6ZBxAkoT3ZBvzx0Tf7PzS7ZCqhaZBsfRekeqa3Osswmpp6Jf3J9wb90GfafZAe43hPKLEmb6ZBz3J3DpKw14AW16WXOmhbgaDsbqvuXO1O8YqKxbQEOEwZDZD
+		console.log(res, res.accessToken); // eslint-disable-line
+
+		if (res.accessToken) {
+			this.login();
+		
+			if (!this.props.loading) {
+				if (!this.props.users.some(user => user.userId === res.id)) {
+					let usrObj = {
+						userId: res.id,
+						fb_link: res.link,
+						location: null,
+					};
+		
+					Meteor.call("users.insert", usrObj);
+					this.state.userContext.setUser({...usrObj, curLocation: null});
+				} else {
+					this.state.userContext.setUser({
+						...this.props.users.find(user => user.userId === res.id),
+						curLocation: null,
+					});
+				}
+			}
+		}
 	}
 
 	setUserLocation() {
@@ -147,13 +176,14 @@ class App extends React.Component {
 		return (
 			<UserContext.Provider value={this.state.userContext}>
 				{this.state.waitingForLocation && <Loading />}
+				<ToastContainer />
 				<Forum
 					loggedin={this.state.login}
-					login={this.login}
 					users={this.props.users}
 					userInputtingLocation={this.state.userInputtingLocation}
 					userStartInputtingLocation={this.userStartInputtingLocation}
 					getUserCurrentLocation={this.getUserCurrentLocation}
+					responseFacebook={this.responseFacebook}
 				/>
 				<MapComponent
 					users={this.props.users}
@@ -169,13 +199,16 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-	users: PropTypes.array
+	users: PropTypes.array,
+	loading: PropTypes.bool,
 };
 
 export default withTracker(() => {
-	Meteor.subscribe("users");
+	const sub = Meteor.subscribe("users");
+	const loading = !sub.ready();
 
 	return {
 		users: Users.find({}).fetch(),
+		loading
 	};
 })(App);

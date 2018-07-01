@@ -5,14 +5,16 @@ import {
 	Route
 } from "react-router-dom";
 
-import ErrorHedgedApp from "../imports/ui/ErrorHedgedApp";
+import ErrorCatcher from "../imports/ui/helpers/ErrorCatcher";
+import App from "../imports/ui/App";
 
 const routes =
 	<Router>
-		<Switch>
-			<Route exact path="/" component={ErrorHedgedApp} />
-			{/* with profile id */}
-		</Switch>
+		<ErrorCatcher>
+			<Switch>
+				<Route exact path="/" component={App} />
+			</Switch>
+		</ErrorCatcher>
 	</Router>;
 
 export default routes;
